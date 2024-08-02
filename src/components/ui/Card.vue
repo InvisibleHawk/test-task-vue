@@ -19,7 +19,9 @@ const getProperlyString = computed(() => {
   <div class="flex flex-col bg-[#F5F5F5] w-[264px] h-[366px] rounded-2xl">
     <img lazy :src="image" class="w-full h-[217px] rounded-t-2xl" />
     <div class="py-[22px] px-[24px] gap-[10px]">
-      <p>{{ getProperlyString }}</p>
+      <div class="h-[69px]">
+        <p>{{ getProperlyString }}</p>
+      </div>
       <div class="flex justify-between mt-[10px]">
         <slot name="icon"></slot>
         <p class="text-[#378B60]">{{ datePublish }}</p>
