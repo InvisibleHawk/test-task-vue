@@ -1,17 +1,38 @@
 <script setup lang="ts">
-import { defineProps, onMounted, computed } from "vue";
+import { onMounted, computed } from "vue";
 import { CardProps } from "../../types";
+import { MONTH_NAME } from "../../constants";
+
+import Bonus from "../icons/Bonus.vue";
+import Fire from "../icons/Fire.vue";
+import Pig from "../icons/Pig.vue";
 
 const props = defineProps<CardProps>();
 
+const iconsItem = {
+  bonus: Bonus,
+  fire: Fire,
+  pig: Pig,
+};
+
 onMounted(() => {
-  console.log(props.image);
+  console.log(props.color);
 });
 
-const getProperlyString = computed(() => {
+const getProperlyTitleString = computed(() => {
   let str = props.shortText ? props.shortText : props.title;
+  return str;
+});
 
-  return str.length < 60 ? str : str.slice(0, 60) + "...";
+const getProperlyDateString = computed(() => {
+  const date = new Date(props.datePublish);
+  const day = date.getDay();
+  const year = date.getFullYear();
+
+  const monthNumber: string = (date.getMonth() + 1).toString();
+  const month = MONTH_NAME[monthNumber];
+
+  return `${day} ${month} ${year}`;
 });
 </script>
 
@@ -20,11 +41,13 @@ const getProperlyString = computed(() => {
     <img lazy :src="image" class="w-full h-[217px] rounded-t-2xl" />
     <div class="py-[22px] px-[24px] gap-[10px]">
       <div class="h-[69px]">
-        <p>{{ getProperlyString }}</p>
+        <p class="line-clamp-3">{{ getProperlyTitleString }}</p>
       </div>
       <div class="flex justify-between mt-[10px]">
-        <slot name="icon"></slot>
-        <p class="text-[#378B60]">{{ datePublish }}</p>
+        <Bonus v-if="iconsItem[icon] === Bonus" :fillColor="color" />
+        <Pig v-else-if="iconsItem[icon] === Pig" :fillColor="color" />
+        <Fire v-else-if="iconsItem[icon] === Fire" :fillColor="color" />
+        <p :class="textColor">{{ getProperlyDateString }} г.</p>
       </div>
     </div>
   </div>

@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { defineProps, computed } from "vue";
 import { Colors } from "../../types";
-import { button_colors } from "../../constants";
+import { BUTTON_COLORS } from "../../constants";
 
 const props = defineProps<{ colorType: Colors }>();
 
-const bindedStyleBtn = computed(() => {
-  return button_colors[props.colorType];
-});
+const bindedStyleBtn = BUTTON_COLORS[props.colorType];
 </script>
 
 <template>

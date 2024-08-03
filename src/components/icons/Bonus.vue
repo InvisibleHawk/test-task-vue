@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { defineProps, withDefaults } from "vue";
-
 interface Props {
-  fillColor: string;
+  fillColor?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {

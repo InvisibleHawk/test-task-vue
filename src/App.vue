@@ -1,69 +1,102 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { CardData } from "./types";
+import { CardData, Colors, PagesNum } from "./types";
+import { EmitPayload } from "./types";
+import {
+  PINK_COLOR,
+  GREEN_COLOR,
+  ORANGE_COLOR,
+  TEXT_COLORS,
+  COLORS,
+} from "./constants";
 
-import Button from "./components/ui/Button.vue";
-import Pig from "./components/icons/Pig.vue";
-import Fire from "./components/icons/Fire.vue";
-import Find from "./components/icons/Find.vue";
+import OrangeButton from "./components/features/OrangeButton.vue";
+import GreenButton from "./components/features/GreenButton.vue";
+import PinkButton from "./components/features/PinkButton.vue";
+
 import Bonus from "./components/icons/Bonus.vue";
+import Fire from "./components/icons/Fire.vue";
+import Pig from "./components/icons/Pig.vue";
+
 import Card from "./components/ui/Card.vue";
 import Input from "./components/ui/Input.vue";
 
-const newsCard = ref<CardData[] | []>([]);
+import { getNewsItem } from "./api";
 
-const getPost = async () => {
-  try {
-    const data = await fetch("https://domotekhnika.ru/api/v1/news?page=7");
-    const jsonData = await data.json();
-    return jsonData;
-  } catch (err) {
-    console.log(err);
-  }
+import { getRandomNumber } from "./utils";
+
+const newsCard = ref<CardData[]>([]);
+
+const getRandomNewsItem = (payload: EmitPayload) => {
+  const randomPageNumber = getRandomNumber();
+  console.log(randomPageNumber);
+  getNewsItem(randomPageNumber).then((response) => {
+    const { news } = response.data;
+    const mutatedNews: CardData[] = news.map((entity: CardData): CardData => {
+      const { color, icon } = payload;
+      entity.textColor = TEXT_COLORS[`${color}`];
+      entity.icon = icon;
+      entity.color = COLORS[`${color}`];
+      return entity;
+    });
+    newsCard.value.push(...mutatedNews);
+  });
+};
+
+const handleEmits = (payload: EmitPayload) => {
+  getRandomNewsItem(payload);
+  console.log(newsCard.value);
 };
 
 onMounted(() => {
-  getPost().then((response) => {
-    const { data } = response;
-    newsCard.value = data.news;
+  getNewsItem().then((response) => {
+    const { news } = response.data;
+    const mutatedNews: CardData[] = news.map((entity: CardData): CardData => {
+      entity.textColor = TEXT_COLORS.green;
+      entity.icon = "pig";
+      entity.color = COLORS["green"];
+      return entity;
+    });
+
+    newsCard.value.push(...mutatedNews);
   });
 });
 </script>
 
 <template>
   <div class="w-full h-full">
-    <div class="w-[1416px] flex flex-wrap gap-6">
+    <div class="w-[1416px] flex flex-wrap gap-6 my-[48px]">
       <Input />
-      <Card
-        v-for="(newCard, index) in newsCard"
-        :key="index"
-        :datePublish="newCard.datePublish"
-        :title="newCard.title"
-        :image="newCard.image"
-        :shortText="newCard.shortText"
-      >
-        <template v-slot:icon>
-          <Bonus fillColor="#378B60" />
-        </template>
-      </Card>
-      <Button colorType="green">
-        <template v-slot:icon>
-          <Pig />
-        </template>
-        <template v-slot:content> Зарузить </template>
-      </Button>
-      <Button colorType="pink">
-        <template v-slot:icon>
-          <Bonus />
-        </template>
-        <template v-slot:content> Зарузить </template>
-      </Button>
-      <Button colorType="orange">
-        <template v-slot:icon>
-          <Fire />
-        </template>
-        <template v-slot:content> Зарузить </template>
-      </Button>
+      <TransitionGroup name="list">
+        <Card
+          v-for="(newCard, index) in newsCard"
+          :key="index"
+          :datePublish="newCard.datePublish"
+          :textColor="newCard.textColor"
+          :color="newCard.color"
+          :title="newCard.title"
+          :image="newCard.image"
+          :shortText="newCard.shortText"
+          :icon="newCard.icon"
+        />
+      </TransitionGroup>
+      <div class="flex justify-center w-full gap-8">
+        <green-button @green-submit="handleEmits" />
+        <pink-button @pink-submit="handleEmits" />
+        <orange-button @orange-submit="handleEmits" />
+      </div>
     </div>
   </div>
 </template>
+
+<style>
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
+}
+</style>
