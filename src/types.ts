@@ -19,6 +19,7 @@ export interface CardData {
   icon: string;
   color: string;
   textColor: string;
+  page: number;
 }
 
 export interface EmitPayload {

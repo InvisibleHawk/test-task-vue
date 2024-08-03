@@ -9,7 +9,7 @@ import Pig from "../icons/Pig.vue";
 
 const props = defineProps<CardProps>();
 
-const iconsItem = {
+const iconsItem: Record<string, object> = {
   bonus: Bonus,
   fire: Fire,
   pig: Pig,
