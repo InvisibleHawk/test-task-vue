@@ -1,9 +1,15 @@
-import { RANDOM_SEED, DEFAULT_ADDITIONAL_DATA } from "./constants";
+import {
+  RANDOM_SEED,
+  DEFAULT_ADDITIONAL_DATA,
+  COLORS,
+  TEXT_COLORS,
+} from "./constants";
 import {
   CardData,
   PagesNum,
   DefautAdditionalDataType,
   NewsResponseData,
+  EmitPayload,
 } from "./types";
 
 export const getRandomNumber = () =>
@@ -26,4 +32,20 @@ export const transformNewsItems = (
   );
 
   return mutatedNewsItems;
+};
+
+export const changeColorAndIcon = (
+  newsCards: CardData[],
+  page: PagesNum,
+  payload: EmitPayload,
+): CardData[] => {
+  return newsCards.map((entity) => {
+    if (entity.page !== page) return entity;
+    return {
+      ...entity,
+      icon: payload.icon,
+      color: COLORS[`${payload.color}`],
+      textColor: TEXT_COLORS[`${payload.color}`],
+    };
+  });
 };

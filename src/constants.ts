@@ -1,6 +1,6 @@
 import { Colors, DefautAdditionalDataType } from "./types";
 
-export const RANDOM_SEED = 10;
+export const RANDOM_SEED = 1;
 export const INIT_PAGE = 7;
 
 export const ORANGE_COLOR = "#FB9600";
@@ -43,6 +43,6 @@ export const MONTH_NAME: Record<string, string> = {
 export const DEFAULT_ADDITIONAL_DATA: DefautAdditionalDataType = {
   textColor: TEXT_COLORS.green,
   color: COLORS["green"],
-  icon: "pic",
+  icon: "pig",
   page: INIT_PAGE,
 };

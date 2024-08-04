@@ -18,7 +18,11 @@ import Input from "../ui/Input.vue";
 
 import { getNewsItem } from "../../api";
 
-import { getRandomNumber, transformNewsItems } from "../../utils";
+import {
+  getRandomNumber,
+  transformNewsItems,
+  changeColorAndIcon,
+} from "../../utils";
 
 const newsCard = ref<CardData[]>([]);
 const inputQuery = ref<string>("");
@@ -26,13 +30,17 @@ const inputQuery = ref<string>("");
 const getRandomNewsItem = (payload: EmitPayload) => {
   const randomPageNumber = getRandomNumber();
   getNewsItem(randomPageNumber).then((response) => {
-    const transformedCards = transformNewsItems(response, {
-      color: COLORS[`${payload.color}`],
-      textColor: TEXT_COLORS[`${payload.color}`],
-      icon: payload.icon,
-      page: randomPageNumber,
-    });
-    newsCard.value.push(...transformedCards);
+    if (typeof response === "number") {
+      newsCard.value = changeColorAndIcon(newsCard.value, response, payload);
+    } else {
+      const transformedCards = transformNewsItems(response, {
+        color: COLORS[`${payload.color}`],
+        textColor: TEXT_COLORS[`${payload.color}`],
+        icon: payload.icon,
+        page: randomPageNumber,
+      });
+      newsCard.value.push(...transformedCards);
+    }
   });
 };
 
@@ -52,13 +60,7 @@ onMounted(() => {
 });
 
 const newsByPageOrder = computed(() => {
-  return newsCard.value.sort((a, b) => {
-    if (a.page < b.page) {
-      return -1;
-    } else {
-      return 1;
-    }
-  });
+  return newsCard.value.sort((a, b) => (a.page < b.page ? -1 : 1));
 });
 
 const newsByPageAndInputOrder = computed(() => {
