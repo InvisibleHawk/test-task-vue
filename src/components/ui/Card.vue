@@ -30,8 +30,6 @@ const getProperlyDateString = computed(() => {
 
   return `${day} ${month} ${year}`;
 });
-
-// max-sm:w-[210px] sm:w-[210px] lg:w-[231px] 2xl:w-[264px]
 </script>
 
 <template>
