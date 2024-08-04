@@ -14,7 +14,7 @@ const handleInputChangeEvent = (e: Event) => {
 </script>
 
 <template>
-  <div class="flex w-full justify-center">
+  <div class="flex justify-center">
     <input
       @input="handleInputChangeEvent"
       :value="inputQuery"

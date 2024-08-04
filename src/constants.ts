@@ -1,11 +1,7 @@
 import { Colors, DefautAdditionalDataType } from "./types";
 
-export const RANDOM_SEED = 1;
+export const RANDOM_SEED = 10;
 export const INIT_PAGE = 7;
-
-export const ORANGE_COLOR = "#FB9600";
-export const PINK_COLOR = "#FF00B8";
-export const GREEN_COLOR = "#378B60";
 
 export const BUTTON_COLORS: Record<Colors, String> = {
   orange: "bg-[#FB9600]",

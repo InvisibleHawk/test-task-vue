@@ -15,6 +15,17 @@ import {
 export const getRandomNumber = () =>
   Math.floor(Math.random() * RANDOM_SEED + 1) as PagesNum;
 
+export const debounce = (fn: Function, ms: number) => {
+  let timerID: ReturnType<typeof setTimeout> | null = null;
+  return function (...args: any) {
+    if (timerID) clearTimeout(timerID);
+
+    timerID = setTimeout(() => {
+      fn.apply(null, args);
+    }, ms);
+  };
+};
+
 export const transformNewsItems = (
   response: NewsResponseData,
   additionalData: DefautAdditionalDataType = DEFAULT_ADDITIONAL_DATA,

@@ -12,7 +12,7 @@ const bindedStyleBtn = BUTTON_COLORS[props.colorType];
     :class="bindedStyleBtn"
     class="rounded-full px-[32px] py-[16px] text-white"
   >
-    <div class="flex gap-[10px]">
+    <div class="flex justify-center gap-[10px]">
       <slot name="content"></slot>
       <slot name="icon"></slot>
     </div>

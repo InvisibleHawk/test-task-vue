@@ -1,13 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 import { CardData } from "../../types";
-import { EmitPayload } from "../../types";
-import {
-  TEXT_COLORS,
-  COLORS,
-  INIT_PAGE,
-  DEFAULT_ADDITIONAL_DATA,
-} from "../../constants";
+import { EmitPayload, NewsResponseData } from "../../types";
+import { TEXT_COLORS, COLORS } from "../../constants";
 
 import OrangeButton from "../features/OrangeButton.vue";
 import GreenButton from "../features/GreenButton.vue";
@@ -22,6 +17,7 @@ import {
   getRandomNumber,
   transformNewsItems,
   changeColorAndIcon,
+  debounce,
 } from "../../utils";
 
 const newsCard = ref<CardData[]>([]);
@@ -33,12 +29,15 @@ const getRandomNewsItem = (payload: EmitPayload) => {
     if (typeof response === "number") {
       newsCard.value = changeColorAndIcon(newsCard.value, response, payload);
     } else {
-      const transformedCards = transformNewsItems(response, {
-        color: COLORS[`${payload.color}`],
-        textColor: TEXT_COLORS[`${payload.color}`],
-        icon: payload.icon,
-        page: randomPageNumber,
-      });
+      const transformedCards = transformNewsItems(
+        response as NewsResponseData,
+        {
+          color: COLORS[`${payload.color}`],
+          textColor: TEXT_COLORS[`${payload.color}`],
+          icon: payload.icon,
+          page: randomPageNumber,
+        },
+      );
       newsCard.value.push(...transformedCards);
     }
   });
@@ -52,9 +51,14 @@ const inputEmit = (payload: string) => {
   inputQuery.value = payload;
 };
 
+const debouncedInput = debounce(inputEmit, 200);
+
 onMounted(() => {
   getNewsItem().then((response) => {
-    const transformedCards = transformNewsItems(response);
+    if (typeof response === "number") {
+      return newsCard.value;
+    }
+    const transformedCards = transformNewsItems(response as NewsResponseData);
     newsCard.value.push(...transformedCards);
   });
 });
@@ -72,10 +76,10 @@ const newsByPageAndInputOrder = computed(() => {
 </script>
 
 <template>
-  <div class="my-[48px] flex flex-col">
-    <Input @input="inputEmit" />
+  <div class="my-12 flex w-full flex-col p-[12px] sm:px-0">
+    <Input @input="debouncedInput" />
     <div
-      class="my-[48px] flex h-full w-[1416px] flex-wrap justify-center gap-6"
+      class="mb-[24px] mt-[48px] grid grid-cols-2 justify-items-center gap-[12px] md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 xl:gap-6"
     >
       <TransitionGroup name="list">
         <Card
@@ -91,10 +95,10 @@ const newsByPageAndInputOrder = computed(() => {
         />
       </TransitionGroup>
     </div>
-    <div class="flex justify-center gap-8">
-      <green-button @green-submit="handleEmits" />
-      <pink-button @pink-submit="handleEmits" />
-      <orange-button @orange-submit="handleEmits" />
+    <div class="flex flex-wrap justify-center gap-[12px] sm:flex-row sm:gap-8">
+      <green-button class="flex-1 sm:flex-none" @green-submit="handleEmits" />
+      <pink-button class="flex-1 sm:flex-none" @pink-submit="handleEmits" />
+      <orange-button class="w-full sm:w-auto" @orange-submit="handleEmits" />
     </div>
   </div>
 </template>
@@ -107,6 +111,6 @@ const newsByPageAndInputOrder = computed(() => {
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
-  transform: translateX(50px) translateY(50px);
+  transform: translateX(50px);
 }
 </style>

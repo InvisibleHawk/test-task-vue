@@ -30,10 +30,14 @@ const getProperlyDateString = computed(() => {
 
   return `${day} ${month} ${year}`;
 });
+
+// max-sm:w-[210px] sm:w-[210px] lg:w-[231px] 2xl:w-[264px]
 </script>
 
 <template>
-  <div class="flex h-[366px] w-[264px] flex-col rounded-2xl bg-[#F5F5F5]">
+  <div
+    class="flex h-[366px] w-[210px] flex-col rounded-2xl bg-[#F5F5F5] lg:w-[231px] xl:w-[264px]"
+  >
     <img
       lazy
       :src="image"

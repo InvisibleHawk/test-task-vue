@@ -25,13 +25,10 @@ export const getNewsItem = async (
   let result: NewsResponseData | PagesNum | null = null;
 
   if (cache.has(page)) {
-    console.log("This response already have: ", cache.get(page));
     result = page;
     return result;
   }
 
   result = await fetchNews(page);
-  console.log(page);
-  console.log("RESULT", result);
   return result;
 };

@@ -3,7 +3,7 @@ interface Props {
   fillColor?: string;
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   fillColor: "white",
 });
 </script>
