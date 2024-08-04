@@ -10,7 +10,7 @@ const bindedStyleBtn = BUTTON_COLORS[props.colorType];
 <template>
   <button
     :class="bindedStyleBtn"
-    class="text-white rounded-full py-[16px] px-[32px]"
+    class="rounded-full px-[32px] py-[16px] text-white"
   >
     <div class="flex gap-[10px]">
       <slot name="content"></slot>

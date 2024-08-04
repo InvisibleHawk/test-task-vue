@@ -15,10 +15,6 @@ const iconsItem: Record<string, object> = {
   pig: Pig,
 };
 
-onMounted(() => {
-  console.log(props.color);
-});
-
 const getProperlyTitleString = computed(() => {
   let str = props.shortText ? props.shortText : props.title;
   return str;
@@ -37,13 +33,17 @@ const getProperlyDateString = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-col bg-[#F5F5F5] w-[264px] h-[366px] rounded-2xl">
-    <img lazy :src="image" class="w-full h-[217px] rounded-t-2xl" />
-    <div class="py-[22px] px-[24px] gap-[10px]">
+  <div class="flex h-[366px] w-[264px] flex-col rounded-2xl bg-[#F5F5F5]">
+    <img
+      lazy
+      :src="image"
+      class="h-[217px] w-full rounded-t-2xl object-cover"
+    />
+    <div class="gap-[10px] px-[24px] py-[22px]">
       <div class="h-[69px]">
         <p class="line-clamp-3">{{ getProperlyTitleString }}</p>
       </div>
-      <div class="flex justify-between mt-[10px]">
+      <div class="mt-[10px] flex justify-between">
         <Bonus v-if="iconsItem[icon] === Bonus" :fillColor="color" />
         <Pig v-else-if="iconsItem[icon] === Pig" :fillColor="color" />
         <Fire v-else-if="iconsItem[icon] === Fire" :fillColor="color" />

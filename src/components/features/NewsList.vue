@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
-import { CardData, Colors, PagesNum } from "../../types";
+import { CardData } from "../../types";
 import { EmitPayload } from "../../types";
 import { TEXT_COLORS, COLORS, INIT_PAGE } from "../../constants";
 
@@ -16,6 +16,7 @@ import { getNewsItem } from "../../api";
 import { getRandomNumber } from "../../utils";
 
 const newsCard = ref<CardData[]>([]);
+const inputQuery = ref<string>("");
 
 const getRandomNewsItem = (payload: EmitPayload) => {
   const randomPageNumber = getRandomNumber();
@@ -25,8 +26,8 @@ const getRandomNewsItem = (payload: EmitPayload) => {
     const mutatedNews: CardData[] = news.map((entity: CardData): CardData => {
       const { color, icon } = payload;
       entity.textColor = TEXT_COLORS[`${color}`];
-      entity.icon = icon;
       entity.color = COLORS[`${color}`];
+      entity.icon = icon;
       entity.page = randomPageNumber;
       return entity;
     });
@@ -39,13 +40,17 @@ const handleEmits = (payload: EmitPayload) => {
   console.log(newsCard.value);
 };
 
+const inputEmit = (payload: string) => {
+  inputQuery.value = payload;
+};
+
 onMounted(() => {
   getNewsItem().then((response) => {
     const { news } = response.data;
     const mutatedNews: CardData[] = news.map((entity: CardData): CardData => {
       entity.textColor = TEXT_COLORS.green;
-      entity.icon = "pig";
       entity.color = COLORS["green"];
+      entity.icon = "pig";
       entity.page = INIT_PAGE;
       return entity;
     });
@@ -54,7 +59,7 @@ onMounted(() => {
   });
 });
 
-const filteredNews = computed(() => {
+const newsByPageOrder = computed(() => {
   return newsCard.value.sort((a, b) => {
     if (a.page < b.page) {
       return -1;
@@ -63,28 +68,51 @@ const filteredNews = computed(() => {
     }
   });
 });
+
+const newsByPageAndInputOrder = computed(() => {
+  let orderedNews = newsByPageOrder.value;
+  return orderedNews.filter((entity) =>
+    entity.shortText.toLowerCase().includes(inputQuery.value.toLowerCase()),
+  );
+});
 </script>
 
 <template>
-  <div class="flex flex-wrap justify-center gap-6 my-[48px]">
-    <Input />
-    <TransitionGroup name="list">
-      <Card
-        v-for="(newCard, index) in filteredNews"
-        :key="index"
-        :datePublish="newCard.datePublish"
-        :textColor="newCard.textColor"
-        :color="newCard.color"
-        :title="newCard.title"
-        :image="newCard.image"
-        :shortText="newCard.shortText"
-        :icon="newCard.icon"
-      />
-    </TransitionGroup>
-    <div class="flex justify-center w-full gap-8">
+  <div class="my-[48px] flex flex-col">
+    <Input @input="inputEmit" />
+    <div
+      class="my-[48px] flex h-full w-[1416px] flex-wrap justify-center gap-6"
+    >
+      <TransitionGroup name="list">
+        <Card
+          v-for="(newCard, index) in newsByPageAndInputOrder"
+          :key="index"
+          :datePublish="newCard.datePublish"
+          :textColor="newCard.textColor"
+          :color="newCard.color"
+          :title="newCard.title"
+          :image="newCard.image"
+          :shortText="newCard.shortText"
+          :icon="newCard.icon"
+        />
+      </TransitionGroup>
+    </div>
+    <div class="flex justify-center gap-8">
       <green-button @green-submit="handleEmits" />
       <pink-button @pink-submit="handleEmits" />
       <orange-button @orange-submit="handleEmits" />
     </div>
   </div>
 </template>
+
+<style>
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(50px) translateY(50px);
+}
+</style>
