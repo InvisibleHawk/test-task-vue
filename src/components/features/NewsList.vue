@@ -2,7 +2,12 @@
 import { ref, onMounted, computed } from "vue";
 import { CardData } from "../../types";
 import { EmitPayload } from "../../types";
-import { TEXT_COLORS, COLORS, INIT_PAGE } from "../../constants";
+import {
+  TEXT_COLORS,
+  COLORS,
+  INIT_PAGE,
+  DEFAULT_ADDITIONAL_DATA,
+} from "../../constants";
 
 import OrangeButton from "../features/OrangeButton.vue";
 import GreenButton from "../features/GreenButton.vue";
@@ -13,31 +18,26 @@ import Input from "../ui/Input.vue";
 
 import { getNewsItem } from "../../api";
 
-import { getRandomNumber } from "../../utils";
+import { getRandomNumber, transformNewsItems } from "../../utils";
 
 const newsCard = ref<CardData[]>([]);
 const inputQuery = ref<string>("");
 
 const getRandomNewsItem = (payload: EmitPayload) => {
   const randomPageNumber = getRandomNumber();
-  console.log(randomPageNumber);
   getNewsItem(randomPageNumber).then((response) => {
-    const { news } = response.data;
-    const mutatedNews: CardData[] = news.map((entity: CardData): CardData => {
-      const { color, icon } = payload;
-      entity.textColor = TEXT_COLORS[`${color}`];
-      entity.color = COLORS[`${color}`];
-      entity.icon = icon;
-      entity.page = randomPageNumber;
-      return entity;
+    const transformedCards = transformNewsItems(response, {
+      color: COLORS[`${payload.color}`],
+      textColor: TEXT_COLORS[`${payload.color}`],
+      icon: payload.icon,
+      page: randomPageNumber,
     });
-    newsCard.value.push(...mutatedNews);
+    newsCard.value.push(...transformedCards);
   });
 };
 
 const handleEmits = (payload: EmitPayload) => {
   getRandomNewsItem(payload);
-  console.log(newsCard.value);
 };
 
 const inputEmit = (payload: string) => {
@@ -46,16 +46,8 @@ const inputEmit = (payload: string) => {
 
 onMounted(() => {
   getNewsItem().then((response) => {
-    const { news } = response.data;
-    const mutatedNews: CardData[] = news.map((entity: CardData): CardData => {
-      entity.textColor = TEXT_COLORS.green;
-      entity.color = COLORS["green"];
-      entity.icon = "pig";
-      entity.page = INIT_PAGE;
-      return entity;
-    });
-
-    newsCard.value.push(...mutatedNews);
+    const transformedCards = transformNewsItems(response);
+    newsCard.value.push(...transformedCards);
   });
 });
 
@@ -70,7 +62,7 @@ const newsByPageOrder = computed(() => {
 });
 
 const newsByPageAndInputOrder = computed(() => {
-  let orderedNews = newsByPageOrder.value;
+  const orderedNews = newsByPageOrder.value;
   return orderedNews.filter((entity) =>
     entity.shortText.toLowerCase().includes(inputQuery.value.toLowerCase()),
   );

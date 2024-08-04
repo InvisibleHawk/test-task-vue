@@ -3,11 +3,7 @@ import NewsList from "./components/features/NewsList.vue";
 import { useFetchNews } from "./components/composables/useFetchNews";
 import { onMounted } from "vue";
 
-const { data, error } = useFetchNews();
-
-onMounted(() => {
-  console.log(data);
-});
+onMounted(() => {});
 </script>
 
 <template>
